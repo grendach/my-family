@@ -35,8 +35,8 @@ const PersonType = new GraphQLObjectType({
         family: {
             type: FamilyType,
             resolve(parent, args){
-                // console.log(parent);
-                return _.find(person, {id: parent.familyId});
+                console.log(parent);
+                return _.find(family, {id: parent.familyId});
             }
         }
     })
@@ -61,7 +61,7 @@ const RootQuery = new GraphQLObjectType({
             resolve(parent, args){
                 // console.log(typeof(args.surname));
                 //code to get data from db/other source
-                return _.find(persons,{id:args.id})
+                return _.find(person,{id:args.id})
             }
         },
         family: {
