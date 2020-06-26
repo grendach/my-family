@@ -6,7 +6,8 @@ const {
     GraphQLString,
     GraphQLSchema,
     GraphQLID,
-    GraphQLInt
+    GraphQLInt,
+    GraphQLList
 } = graphql;
 
 
@@ -35,7 +36,6 @@ const PersonType = new GraphQLObjectType({
         family: {
             type: FamilyType,
             resolve(parent, args){
-                console.log(parent);
                 return _.find(family, {id: parent.familyId});
             }
         }
@@ -48,6 +48,12 @@ const FamilyType = new GraphQLObjectType({
         id: {type: GraphQLID},
         name: {type: GraphQLString},
         location: {type: GraphQLString},
+        members: {
+            type: new GraphQLList(PersonType),
+            resolve(parent, args){
+                return _.filter(person, {familyId: parent.id});
+            }
+        }
         
     })
 });
@@ -59,8 +65,6 @@ const RootQuery = new GraphQLObjectType({
             type: PersonType,
             args:{id: {type: GraphQLID}},
             resolve(parent, args){
-                // console.log(typeof(args.surname));
-                //code to get data from db/other source
                 return _.find(person,{id:args.id})
             }
         },
@@ -69,6 +73,18 @@ const RootQuery = new GraphQLObjectType({
             args: {id:{type:GraphQLID}},
             resolve(parent, args){
                 return _.find(family,{id: args.id});
+            }
+        },
+        humans: {
+            type: new GraphQLList(PersonType),
+            resolve(parent, args){
+                return person
+            }
+        },
+        families: {
+            type: new GraphQLList(FamilyType),
+            resolve(parent, args){
+                return family
             }
         }
 
