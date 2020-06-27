@@ -1,5 +1,7 @@
 const graphql = require('graphql');
-const _=require('lodash')
+const _=require('lodash');
+const Person = require('../models/person');
+const Family = require('../models/family');
 
 const {
     GraphQLObjectType, 
@@ -12,18 +14,18 @@ const {
 
 
 //dummy data
-var person = [
-    {name:'Sergii', surname:'Temchenko', age:34, biography:'Lives in canada', id:'1', familyId:'1'},
-    {name:'Dmytro', surname:'Grendach', age:35, biography:'DevOps engineer', id:'2', familyId:'2'},
-    {name:'Igor', surname:'Temchenko', age:30, biography:'Drives tractor', id:'3', familyId:'1'},
-    {name:'Ievgen', surname:'Borysenko', age:25, biography:'dont speek Ukrainian', id:'3', familyId:'3'},
-];
+// var person = [
+//     {name:'Sergii', surname:'Temchenko', age:34, biography:'Lives in canada', id:'1', familyId:'1'},
+//     {name:'Dmytro', surname:'Grendach', age:35, biography:'DevOps engineer', id:'2', familyId:'2'},
+//     {name:'Igor', surname:'Temchenko', age:30, biography:'Drives tractor', id:'3', familyId:'1'},
+//     {name:'Ievgen', surname:'Borysenko', age:25, biography:'dont speek Ukrainian', id:'3', familyId:'3'},
+// ];
 
-var family = [
-    {name:'Temchenko', location:'Zhdany', id:'1'},
-    {name:'Grendach', location:'Myrgorod', id:'2'},
-    {name:'Borysenko', location:'Kramatorsk', id:'3'},
-];
+// var family = [
+//     {name:'Temchenko', location:'Zhdany', id:'1'},
+//     {name:'Grendach', location:'Myrgorod', id:'2'},
+//     {name:'Borysenko', location:'Kramatorsk', id:'3'},
+// ];
 
 const PersonType = new GraphQLObjectType({
     name: 'Person',
@@ -36,7 +38,7 @@ const PersonType = new GraphQLObjectType({
         family: {
             type: FamilyType,
             resolve(parent, args){
-                return _.find(family, {id: parent.familyId});
+                // return _.find(family, {id: parent.familyId});
             }
         }
     })
@@ -51,7 +53,7 @@ const FamilyType = new GraphQLObjectType({
         members: {
             type: new GraphQLList(PersonType),
             resolve(parent, args){
-                return _.filter(person, {familyId: parent.id});
+                // return _.filter(person, {familyId: parent.id});
             }
         }
         
@@ -65,32 +67,74 @@ const RootQuery = new GraphQLObjectType({
             type: PersonType,
             args:{id: {type: GraphQLID}},
             resolve(parent, args){
-                return _.find(person,{id:args.id})
+                // return _.find(person,{id:args.id})
             }
         },
         family: {
             type: FamilyType,
             args: {id:{type:GraphQLID}},
             resolve(parent, args){
-                return _.find(family,{id: args.id});
+                // return _.find(family,{id: args.id});
             }
         },
         humans: {
             type: new GraphQLList(PersonType),
             resolve(parent, args){
-                return person
+                // return person
             }
         },
         families: {
             type: new GraphQLList(FamilyType),
             resolve(parent, args){
-                return family
+                // return family
             }
         }
 
     }
 });
 
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addFamily:{
+            type: FamilyType,
+            args: {
+                name: {type: GraphQLString},
+                location: {type: GraphQLString}
+            },
+            resolve(parent, args){
+                let family = new Family({
+                    name: args.name,
+                    location: args.location
+                });
+            return family.save()
+            }
+        },
+        addPerson:{
+            type: PersonType,
+            args: {
+                name: {type: GraphQLString},
+                surname: {type: GraphQLString},
+                age: {type: GraphQLInt},
+                biography: {type: GraphQLString},
+                familyId: {type: GraphQLID}
+            },
+            resolve(parent, args){
+                let person = new Person({
+                    name: args.name,
+                    surname: args.surname,
+                    age: args.age,
+                    biography: args.biography,
+                    familyId: args.familyId
+                });
+                return person.save();
+            }
+        }
+    }
+
+})
+
 module.exports = new graphql.GraphQLSchema({
-    query:RootQuery
+    query:RootQuery,
+    mutation: Mutation
 });
