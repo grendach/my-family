@@ -9,23 +9,10 @@ const {
     GraphQLSchema,
     GraphQLID,
     GraphQLInt,
-    GraphQLList
+    GraphQLList,
+    GraphQLNonNull
 } = graphql;
 
-
-//dummy data
-// var person = [
-//     {name:'Sergii', surname:'Temchenko', age:34, biography:'Lives in canada', id:'1', familyId:'1'},
-//     {name:'Dmytro', surname:'Grendach', age:35, biography:'DevOps engineer', id:'2', familyId:'2'},
-//     {name:'Igor', surname:'Temchenko', age:30, biography:'Drives tractor', id:'3', familyId:'1'},
-//     {name:'Ievgen', surname:'Borysenko', age:25, biography:'dont speek Ukrainian', id:'3', familyId:'3'},
-// ];
-
-// var family = [
-//     {name:'Temchenko', location:'Zhdany', id:'1'},
-//     {name:'Grendach', location:'Myrgorod', id:'2'},
-//     {name:'Borysenko', location:'Kramatorsk', id:'3'},
-// ];
 
 const PersonType = new GraphQLObjectType({
     name: 'Person',
@@ -38,7 +25,7 @@ const PersonType = new GraphQLObjectType({
         family: {
             type: FamilyType,
             resolve(parent, args){
-                // return _.find(family, {id: parent.familyId});
+                return Family.findById(parent.familyId)
             }
         }
     })
@@ -53,7 +40,7 @@ const FamilyType = new GraphQLObjectType({
         members: {
             type: new GraphQLList(PersonType),
             resolve(parent, args){
-                // return _.filter(person, {familyId: parent.id});
+                return Person.find({familyId: parent.id})
             }
         }
         
@@ -67,26 +54,26 @@ const RootQuery = new GraphQLObjectType({
             type: PersonType,
             args:{id: {type: GraphQLID}},
             resolve(parent, args){
-                // return _.find(person,{id:args.id})
+                return Person.findById(args.id);
             }
         },
         family: {
             type: FamilyType,
             args: {id:{type:GraphQLID}},
             resolve(parent, args){
-                // return _.find(family,{id: args.id});
+                return Family.findById(args.id);
             }
         },
         humans: {
             type: new GraphQLList(PersonType),
             resolve(parent, args){
-                // return person
+                return Person.find({})
             }
         },
         families: {
             type: new GraphQLList(FamilyType),
             resolve(parent, args){
-                // return family
+                return Family.find({})
             }
         }
 
@@ -99,8 +86,8 @@ const Mutation = new GraphQLObjectType({
         addFamily:{
             type: FamilyType,
             args: {
-                name: {type: GraphQLString},
-                location: {type: GraphQLString}
+                name: {type: new GraphQLNonNull(GraphQLString)},
+                location: {type: new GraphQLNonNull(GraphQLString)}
             },
             resolve(parent, args){
                 let family = new Family({
@@ -113,11 +100,11 @@ const Mutation = new GraphQLObjectType({
         addPerson:{
             type: PersonType,
             args: {
-                name: {type: GraphQLString},
-                surname: {type: GraphQLString},
-                age: {type: GraphQLInt},
-                biography: {type: GraphQLString},
-                familyId: {type: GraphQLID}
+                name: {type: new GraphQLNonNull(GraphQLString)},
+                surname: {type: new GraphQLNonNull(GraphQLString)},
+                age: {type: new GraphQLNonNull(GraphQLInt)},
+                biography: {type: new GraphQLNonNull(GraphQLString)},
+                familyId: {type: new GraphQLNonNull(GraphQLID)}
             },
             resolve(parent, args){
                 let person = new Person({
