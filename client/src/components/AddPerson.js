@@ -1,17 +1,9 @@
 import React, { Component } from 'react';
-import {gql} from 'apollo-boost';
 import {graphql} from 'react-apollo';
+import {getFamilyQuery} from '../queries/queries';
 
 
 
-const getFamilyQuery = gql`
-    {
-        families{
-            name
-            id
-        }
-    }
-`
 class AddPerson extends Component {
     displayFamily(){
         var data = this.props.data;
@@ -29,25 +21,25 @@ class AddPerson extends Component {
         return(
             <form id="add-person">
             <div className="field">
-                <label>Person name:</label>
+                <label>Ім'я:</label>
                 <input type="text" />
             </div>
             <div className="field">
-                <label>Person Surname:</label>
+                <label>Прізвище:</label>
                 <input type="text" />
             </div>
             <div className="field">
-                <label>Age:</label>
+                <label>Вік:</label>
                 <input type="number" />
             </div>
             <div className="field">
-                <label>Bio:</label>
+                <label>Біографія:</label>
                 <input type="text" />
             </div>
             <div className="field">
-                <label>Family:</label>
+                <label>Родина:</label>
                 <select>
-                    <option>Select family</option>
+                    <option>Оберіть родину</option>
                     { this.displayFamily() }
                 </select>
             </div>

@@ -1,17 +1,6 @@
 import React, { Component } from 'react';
-import {gql} from 'apollo-boost';
 import {graphql} from 'react-apollo';
-
-
-
-const getPersonQuery = gql`
-    {
-        humans{
-            name
-            id
-        }
-    }
-`
+import {getPersonQuery} from '../queries/queries';
 
 class PersonList extends Component {
     displayFamilyMembers(){
