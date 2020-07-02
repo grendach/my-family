@@ -5,6 +5,17 @@ import {getFamilyQuery} from '../queries/queries';
 
 
 class AddPerson extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            name: '',
+            surname: '',
+            age: '',
+            biography: '',
+            familyId: ''
+        };
+    }
+
     displayFamily(){
         var data = this.props.data;
         if(data.loading){
@@ -15,30 +26,34 @@ class AddPerson extends Component {
             });
         }
     }
+    submitForm(e){
+        e.preventDefault()
+        console.log(this.state);
+    }
     
     render(){
         console.log(this.props);
         return(
-            <form id="add-person">
+            <form id="add-person" onSubmit={ this.submitForm.bind(this) } >
             <div className="field">
                 <label>Ім'я:</label>
-                <input type="text" />
+                <input type="text" onChange={ (e) => this.setState({ name: e.target.value }) } />
             </div>
             <div className="field">
                 <label>Прізвище:</label>
-                <input type="text" />
+                <input type="text" onChange={ (e) => this.setState({ surname: e.target.value }) } />
             </div>
             <div className="field">
                 <label>Вік:</label>
-                <input type="number" />
+                <input type="text" onChange={ (e) => this.setState({ age: e.target.value }) } />
             </div>
             <div className="field">
                 <label>Біографія:</label>
-                <input type="text" />
+                <input type="text" onChange={ (e) => this.setState({ biography: e.target.value }) } />
             </div>
             <div className="field">
                 <label>Родина:</label>
-                <select>
+                <select onChange={ (e) => this.setState({ familyId: e.target.value }) } >
                     <option>Оберіть родину</option>
                     { this.displayFamily() }
                 </select>
